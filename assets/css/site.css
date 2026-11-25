@@ -3,3 +3,5 @@
 .top{gap:8px 16px;flex-wrap:wrap;padding-block:8px}
 .site-updated{font-size:.75rem;color:#5d716b;line-height:1.5}
 .site-updated time{font-variant-numeric:tabular-nums}
+
+.feedback-form{margin-block:12px 24px}.feedback-form label{display:block;font-weight:700;margin-bottom:8px}.feedback-form textarea{display:block;width:100%;padding:12px;font:inherit;color:inherit;background:#fff;border:1px solid #9eafa7;border-radius:10px;resize:vertical}.feedback-form p{margin:8px 0 12px}.feedback-form #feedback-status:empty{display:none}
