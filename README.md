@@ -46,7 +46,7 @@ JavaScript 語法檢查可使用：`Get-ChildItem -Recurse -Filter *.js | ForEac
 
 ## 公開網站及授權
 
-網站 https://ericyeh2377.github.io/daily-calc/ 提供免費試算與 Excel 下載。原始碼及 downloads/ 下三份 Excel 試算表皆採用 MIT 授權，詳見 [LICENSE](LICENSE)。
+網站 https://ericyeh2377.github.io/daily-calc/ 提供線上試算與 Excel 下載。原始碼及 downloads/ 下三份 Excel 試算表皆採用 MIT 授權，詳見 [LICENSE](LICENSE)。
 
 ## 加班費示範範圍
 
