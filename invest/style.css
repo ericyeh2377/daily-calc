@@ -443,3 +443,49 @@ body:has(#mform) header button:focus-visible {
 
 .market-price .market-change-up { color: #a62d35; }
 .market-price .market-change-down { color: #17664e; }
+
+/* Risk quiz: keep the radio and its wrapping answer aligned. */
+#quiz {
+  display: grid;
+  gap: 1rem;
+}
+#quiz fieldset {
+  min-inline-size: 0;
+  margin: 0;
+  padding: .65rem clamp(.65rem, 2.5vw, 1rem) .9rem;
+}
+#quiz legend {
+  max-inline-size: 100%;
+  padding-inline: .35rem;
+  font-weight: 700;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+#quiz .quiz-choice {
+  align-items: flex-start;
+  gap: .65rem;
+  min-block-size: 44px;
+  padding: .6rem .7rem;
+  margin-block-start: .35rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+#quiz .quiz-choice input {
+  flex: 0 0 1rem;
+  inline-size: 1rem;
+  block-size: 1rem;
+  margin: .3rem 0 0;
+  accent-color: #0f766e;
+}
+#quiz .quiz-choice:has(input:checked) {
+  background: #f0fdfa;
+  border-color: #0f766e;
+}
+#quiz .quiz-choice:has(input:focus-visible) {
+  outline: 2px solid #0f766e;
+  outline-offset: 2px;
+}
+#quiz button[type="submit"], #quiz > button {
+  justify-self: start;
+}
