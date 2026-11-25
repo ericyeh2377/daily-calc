@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" role="img" aria-label="拾步 Stepwise Logo">
+  <rect width="32" height="32" rx="8" fill="#0F766E"/>
+  <path d="M6.5 23.5 H11.2 Q12.8 23.5 12.8 21.9 V19.1 Q12.8 17.5 14.4 17.5 H17.2 Q18.8 17.5 18.8 15.9 V13.1 Q18.8 11.5 20.4 11.5 H25.5" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="23" cy="7.5" r="2.2" fill="#FDE68A"/>
+</svg>

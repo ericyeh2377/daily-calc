@@ -1,10 +1,11 @@
-# 日常小算所
+# 好算試算所
 
 純靜態 HTML、CSS、JavaScript，不需建置工具或外部套件。直接開啟 index.html 即可使用。
 
 ## 資料夾結構
 
-- index.html：首頁與工具列表
+- index.html：首頁與生活試算工具列表
+- invest/：拾步 Stepwise 獨立投資入門區。更新時使用原始專案的 dist，保留返回生活試算的連結與 canonical。
 - about.html、privacy.html、disclaimer.html：共用頁面
 - tools/overtime/index.html：加班費試算、官方來源、FAQPage JSON-LD
 - tools/overtime/logic.js：瀏覽器與 Node 共用計算邏輯
@@ -46,7 +47,7 @@ JavaScript 語法檢查可使用：`Get-ChildItem -Recurse -Filter *.js | ForEac
 
 ## 公開網站及授權
 
-網站 https://ericyeh2377.github.io/daily-calc/ 提供線上試算與 Excel 下載。原始碼及 downloads/ 下三份 Excel 試算表皆採用 MIT 授權，詳見 [LICENSE](LICENSE)。
+網站 https://ericyeh2377.github.io/daily-calc/ 提供線上試算與 Excel 下載。生活試算原始碼及 downloads/ 下三份 Excel 試算表皆採用 MIT 授權，詳見 [LICENSE](LICENSE)。投資區的政府資料與第三方元件依各自授權，詳見 [投資區授權](invest/vendor/LICENSES.txt) 及投資區內的資料來源。
 
 ## 加班費示範範圍
 
