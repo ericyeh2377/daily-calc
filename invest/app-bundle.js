@@ -36,9 +36,9 @@ function marketData(){
   const overTheCounter=(window.MARKET_TPEX??[]).filter(stock=>!listedCodes.has(stock.code));
   return {symbols:[...listed,...overTheCounter],idx:window.MARKET_INDEX??{bars:[]}};
 }
-function market(){const {symbols}=marketData();return wrap('歷史收盤行情',`<p>查詢台股每日開、高、低、收，並切換圖表區間。</p><form id="mform"><label>自行輸入上市／上櫃代碼或名稱<input id="mq" type="search" list="hints" autocomplete="off"></label><datalist id="hints">${symbols.map(x=>`<option value="${e(x.code)}">${e(x.name)}</option>`).join('')}</datalist><div id="sugg" class="suggestions"></div><button>查詢</button></form><div id="mresult" class="result-box" aria-live="polite"></div><article class="card"><h2>臺灣加權股價指數</h2><div id="idxchart" class="chart-box"></div><p>證交所「發行量加權股價指數歷史資料」OGL-1，非即時、未還原除權息、僅供教育。${link('https://data.gov.tw/dataset/11755','資料集 11755')}</p></article><p>個股歷史行情由 FinMind 提供，原始資料來自臺灣證券交易所與證券櫃檯買賣中心。${link('https://finmind.github.io/tutor/TaiwanMarket/Technical/','資料說明')}</p>`)}
+function market(){return wrap('歷史收盤行情',`<p>查詢台股每日開、高、低、收，並切換圖表區間。</p><form id="mform"><div class="market-search-row"><label for="mq">上市／上櫃代碼或名稱</label><input id="mq" type="search" autocomplete="off"><button type="submit">查詢</button></div><div id="sugg" class="market-suggestions" role="group" aria-label="搜尋建議" hidden></div><div id="market-recent" class="market-recent" role="group" aria-label="最近查詢" hidden></div></form><div id="mresult" class="result-box" aria-live="polite"></div><article class="card"><h2>臺灣加權股價指數</h2><p id="index-session" class="market-session" aria-label="指數日期與開高低收"></p><div id="idxchart" class="chart-box"></div><p>證交所「發行量加權股價指數歷史資料」OGL-1，非即時、未還原除權息、僅供教育。${link('https://data.gov.tw/dataset/11755','資料集 11755')}</p></article><p>個股歷史行情由 FinMind 提供，原始資料來自臺灣證券交易所與證券櫃檯買賣中心。${link('https://finmind.github.io/tutor/TaiwanMarket/Technical/','資料說明')}</p>`)}
 let disposeMarket;
-function view(){disposeMarket?.();disposeMarket=undefined;let id=location.hash.slice(1)||'home';N.querySelectorAll('a').forEach(x=>x.setAttribute('aria-current',x.dataset.route===id?'page':'false'));const pages={home,roadmap,quiz,glossary,guide,compound,costs,fraud,simulation:simPlaceholder,market,about:()=>wrap('關於拾步 Stepwise','<p>本站提供金融基礎教育，不收集個資、不提供特定標的建議。</p>'),privacy:()=>wrap('隱私權說明','<p>本站無帳號、追蹤碼或 Cookie。查詢個股時，瀏覽器會直接向 FinMind 傳送股票代號。進度和測驗資料存在本機瀏覽器，可由頁尾清除。</p>')};A.innerHTML=(pages[id]||home)();document.title=`${routes.find(x=>x[0]===id)?.[1]||'說明'}｜拾步 Stepwise`;bind(id)}
+function view(){disposeMarket?.();disposeMarket=undefined;let id=location.hash.slice(1)||'home';N.querySelectorAll('a').forEach(x=>x.setAttribute('aria-current',x.dataset.route===id?'page':'false'));const pages={home,roadmap,quiz,glossary,guide,compound,costs,fraud,simulation:simPlaceholder,market,about:()=>wrap('關於拾步 Stepwise','<p>本站提供金融基礎教育，不收集個資、不提供特定標的建議。</p>'),privacy:()=>wrap('隱私權說明','<p>本站無帳號、追蹤碼或 Cookie。查詢個股時，瀏覽器會直接向 FinMind 傳送股票代號。進度、測驗資料和最近查詢存在本機瀏覽器，可由頁尾清除。</p>')};A.innerHTML=(pages[id]||home)();document.title=`${routes.find(x=>x[0]===id)?.[1]||'說明'}｜拾步 Stepwise`;bind(id)}
 function bind(id){if(id==='roadmap'){const done=get('roadmap',[]);A.querySelectorAll('[data-task]').forEach(x=>x.onchange=()=>{const d=new Set(get('roadmap',[]));x.checked?d.add(x.dataset.task):d.delete(x.dataset.task);set('roadmap',[...d]);});document.getElementById('emcalc').onclick=()=>{try{let r=L.emergency({expense:+exp.value,saved:+saved.value,monthlySaving:+saving.value,months:+months.value});const estimate=r.monthsToGoal===null?"目前無新增儲蓄，無法估算達標月數":`預估 ${r.monthsToGoal} 個月達標。`;emres.textContent=`目標 NT$ ${money(r.target)}；尚差 NT$ ${money(r.gap)}；${estimate}`}catch(e){emres.textContent=e.message}}}
 if(id==='quiz')document.getElementById('quiz').onsubmit=x=>{x.preventDefault();let sc=[...new FormData(x.target).values()].map(Number),res=L.score(sc);set('quiz',res);quizres.innerHTML=`<section class="card"><h2>${res}</h2><p>${e(C.quiz.profiles.find(x=>res.startsWith(x.name.slice(0,2)))?.traits||'測驗僅供認識自身風險感受，不代表個人化配置。')}</p></section>`};
 if(id==='glossary'){let q=gq,cat=gc;function paint(){let v=q.value.trim(),items=C.glossary.terms.filter(t=>(!cat.value||t.category===cat.value));if(v)items=window.Fuse?new Fuse(items,{keys:['term','plain','example','caution'],threshold:.38}).search(v).map(x=>x.item):items.filter(t=>`${t.term}${t.plain}`.includes(v));gcount.textContent=`顯示 ${items.length} / 48 個詞`;glist.innerHTML=items.map(t=>`<article class="card"><span class="pill">${e(t.category)}</span><h2>${e(t.term)}</h2><p>${e(t.plain)}</p><p>例子：${e(t.example)}</p><p>注意：${e(t.caution)}</p>${t.source?`<p>${e(t.source)}</p>`:''}</article>`).join('')}q.oninput=cat.onchange=paint;paint()}
@@ -54,20 +54,109 @@ if(id==='market'){
   let request,stockChart,indexChart;
   const history=new Map();
   const price=value=>Number(value).toLocaleString('zh-TW',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const recentKey='market-recent';
+  const recent=document.getElementById('market-recent');
+  const byCode=new Map(symbols.map(stock=>[stock.code,stock]));
+  const normalize=value=>value.trim().toUpperCase();
+  let recentCodes=get(recentKey,[]);
+  recentCodes=Array.isArray(recentCodes)?[...new Set(recentCodes.filter(code=>byCode.has(code)))].slice(0,5):[];
+  const marketName=stock=>stock.market==='TPEX'?'上櫃':'上市';
+  const stockButton=stock=>`<button type="button" data-code="${e(stock.code)}">${e(stock.code)} ${e(stock.name)} <small>${marketName(stock)}</small></button>`;
+  function renderRecent(){
+    recent.hidden=!recentCodes.length;
+    recent.innerHTML=recentCodes.length?`<span>最近查詢</span>${recentCodes.map(code=>stockButton(byCode.get(code))).join('')}<button type="button" data-clear-recent>清除最近查詢</button>`:'';
+  }
+  function saveRecent(code){
+    recentCodes=[code,...recentCodes.filter(item=>item!==code)].slice(0,5);
+    try{set(recentKey,recentCodes)}catch{}
+    renderRecent();
+  }
+  function hideSuggestions(){
+    suggestions.hidden=true;
+    suggestions.innerHTML='';
+  }
   input.oninput=()=>{
-    const query=input.value.trim();
-    const matches=query?search?.search(query,{limit:6})??[]:[];
-    suggestions.innerHTML=matches.map(({item})=>`<button type="button" data-code="${e(item.code)}">${e(item.code)} ${e(item.name)}</button>`).join('');
-    suggestions.querySelectorAll('button').forEach(button=>button.onclick=()=>{input.value=button.dataset.code;form.requestSubmit()});
+    const query=normalize(input.value);
+    if(!query){hideSuggestions();return}
+    const direct=symbols.filter(stock=>stock.code.startsWith(query)||normalize(stock.name).includes(query));
+    const fuzzy=search?.search(query,{limit:6}).map(({item})=>item)??[];
+    const matches=[...new Set([...direct,...fuzzy])].slice(0,6);
+    suggestions.hidden=!matches.length;
+    suggestions.innerHTML=matches.map(stockButton).join('');
   };
+  const selectStock=button=>{
+    input.value=button.dataset.code;
+    input.focus();
+    form.requestSubmit();
+  };
+  suggestions.onclick=event=>{
+    const button=event.target.closest('[data-code]');
+    if(button)selectStock(button);
+  };
+  recent.onclick=event=>{
+    const button=event.target.closest('button');
+    if(!button)return;
+    if(button.hasAttribute('data-clear-recent')){
+      recentCodes=[];
+      try{localStorage.removeItem('stepwise-'+recentKey)}catch{}
+      renderRecent();
+      input.focus();
+    }else selectStock(button);
+  };
+  form.addEventListener('keydown',event=>{
+    const buttons=[...suggestions.querySelectorAll('button')];
+    if(!buttons.length)return;
+    if(event.key==='Escape'){
+      hideSuggestions();
+      input.focus();
+      event.preventDefault();
+    }else if(event.key==='ArrowDown'||event.key==='ArrowUp'){
+      const current=buttons.indexOf(event.target);
+      if(event.target!==input&&current<0)return;
+      const next=event.key==='ArrowDown'?buttons[current+1]??input:current<0?buttons.at(-1):buttons[current-1]??input;
+      next.focus();
+      event.preventDefault();
+    }
+  });
+  renderRecent();
+  const chartOptions={autoSize:true,handleScroll:{vertTouchDrag:false},handleScale:{pinch:true},trackingMode:{exitMode:charts?.TrackingModeExitMode?.OnTouchEnd??0}};
+  function bindSession(chart,session,bars){
+    const last=bars.at(-1);
+    const lookup=new Map(bars.map(bar=>[bar.time,bar]));
+    const eventBar=({time})=>{
+      const key=time&&typeof time==='object'
+        ? [time.year,String(time.month).padStart(2,'0'),String(time.day).padStart(2,'0')].join('-')
+        : time;
+      return lookup.get(key);
+    };
+    const show=bar=>{session.textContent=`${bar.time}　開 ${price(bar.open)}　高 ${price(bar.high)}　低 ${price(bar.low)}　收 ${price(bar.close)}`};
+    let pinned=last;
+    show(last);
+    chart?.subscribeCrosshairMove(event=>show(eventBar(event)??pinned));
+    chart?.subscribeClick(event=>{
+      const bar=eventBar(event);
+      if(bar){pinned=bar;show(bar)}
+    });
+    return ()=>{pinned=last;show(last)};
+  }
+  function dailyChange(bars){
+    const last=bars.at(-1);
+    const spread=Number.isFinite(last.spread)?last.spread:null;
+    const reference=spread===null?null:last.close-spread;
+    const percent=spread!==null&&reference>0?100*spread/reference:null;
+    const signed=(value,unit='')=>(value>0?'+':value<0?'−':'')+price(Math.abs(value))+unit;
+    const direction=spread>0?'up':spread<0?'down':'flat';
+    const arrow=direction==='up'?'▲ ':direction==='down'?'▼ ':'';
+    return `<span class="market-change market-change-${direction}">漲跌 ${spread===null?'缺資料':arrow+signed(spread)}　漲跌幅 ${percent===null?'缺資料':signed(percent,'%')}</span>`;
+  }
   form.onsubmit=async event=>{
     event.preventDefault();
     request?.abort();
     stockChart?.remove();
     stockChart=undefined;
-    const query=input.value.trim().toUpperCase();
-    const stock=symbols.find(item=>item.code===query||item.name===query);
-    suggestions.innerHTML='';
+    const query=normalize(input.value);
+    const stock=byCode.get(query)??symbols.find(item=>normalize(item.name)===query);
+    hideSuggestions();
     if(!query){result.textContent='請輸入股票代碼或名稱。';return}
     if(!stock){result.textContent='找不到股票，請確認代碼或從搜尋建議選取。';return}
     const source=stock.market==='TPEX'
@@ -84,48 +173,46 @@ if(id==='market'){
         const payload=await response.json();
         if(payload.status!==200||!Array.isArray(payload.data))throw Error('歷史行情暫時無法載入。');
         const daily=new Map();
-        for(const {stock_id,date,open,max,min,close,Trading_Volume} of payload.data){
+        for(const {stock_id,date,open,max,min,close,spread,Trading_Volume} of payload.data){
           if(stock_id===stock.code&&/^\d{4}-\d{2}-\d{2}$/.test(date)&&[open,max,min,close].every(value=>Number.isFinite(value)&&value>0))
-            daily.set(date,{time:date,open,high:max,low:min,close,volume:Trading_Volume});
+            daily.set(date,{time:date,open,high:max,low:min,close,spread,volume:Trading_Volume});
         }
         bars=[...daily.values()].sort((a,b)=>a.time.localeCompare(b.time));
         if(!bars.length)throw Error('資料來源目前沒有這檔股票的日線。');
         history.set(stock.code,bars);
       }
       if(current.signal.aborted)return;
+      saveRecent(stock.code);
       const last=bars.at(-1);
       result.innerHTML=`<h2>${e(stock.code)} ${e(stock.name)} <small>${stock.market==='TPEX'?'上櫃':'上市'}</small></h2>
-        <p class="market-price"><strong>NT$ ${price(last.close)}</strong> <span>${last.time} 收盤</span></p>
+        <p class="market-price"><strong>NT$ ${price(last.close)}</strong> <span>${last.time} 收盤</span> ${dailyChange(bars)}</p>
         <div class="market-ranges" role="group" aria-label="日線區間">
           <button type="button" data-months="1" aria-pressed="false">1 個月</button>
+          <button type="button" data-months="3" aria-pressed="false">3 個月</button>
           <button type="button" data-months="6" aria-pressed="false">6 個月</button>
           <button type="button" data-months="12" aria-pressed="false">1 年</button>
           <button type="button" data-months="60" aria-pressed="false">5 年</button>
           <button type="button" data-months="0" aria-pressed="true">全部</button>
         </div>
-        <p id="market-session"></p><div id="stockchart" class="chart-box" aria-label="每日價格走勢"></div>
+        <p id="market-session" class="market-session" aria-label="個股日期與開高低收"></p><div id="stockchart" class="chart-box" aria-label="每日價格走勢"></div>
         <p>資料範圍 ${bars[0].time} 至 ${last.time}（${money(bars.length)} 個交易日）。盤後日線，未還原除權息。${link(source,'官方查詢')}</p>`;
       const session=result.querySelector('#market-session');
-      const showDay=bar=>{session.textContent=`${bar.time}　開 ${price(bar.open)}　高 ${price(bar.high)}　低 ${price(bar.low)}　收 ${price(bar.close)}`};
-      showDay(last);
       const host=result.querySelector('#stockchart');
-      if(!charts){host.textContent='圖表元件無法載入，請使用官方查詢。';return}
-      const chart=stockChart=charts.createChart(host,{autoSize:true});
+      if(!charts){
+        bindSession(null,session,bars);
+        host.textContent='圖表元件無法載入，請使用官方查詢。';
+        return;
+      }
+      const chart=stockChart=charts.createChart(host,chartOptions);
       const series=chart.addSeries(charts.CandlestickSeries,{upColor:'#b23b39',downColor:'#16806a',borderVisible:false,wickUpColor:'#b23b39',wickDownColor:'#16806a'});
       series.setData(bars);
       const scale=chart.timeScale();
       scale.fitContent();
-      const barsByDate=new Map(bars.map(bar=>[bar.time,bar]));
-      chart.subscribeCrosshairMove(event=>{
-        const day=event.time;
-        const key=day&&typeof day==='object'
-          ? [day.year,String(day.month).padStart(2,'0'),String(day.day).padStart(2,'0')].join('-')
-          : day;
-        showDay(barsByDate.get(key)??last);
-      });
+      const resetSession=bindSession(chart,session,bars);
       const buttons=[...result.querySelectorAll('[data-months]')];
       buttons.forEach(button=>button.onclick=()=>{
         buttons.forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+        resetSession();
         const months=Number(button.dataset.months);
         if(!months){scale.fitContent();return}
         const date=new Date(last.time+'T00:00:00Z');
@@ -146,9 +233,11 @@ if(id==='market'){
     }
   };
   disposeMarket=()=>{request?.abort();stockChart?.remove();indexChart?.remove()};
-  if(idx.bars.length&&charts){
-    const chart=indexChart=charts.createChart(document.getElementById('idxchart'),{autoSize:true});
-    chart.addSeries(charts.LineSeries).setData(idx.bars.map(({time,close})=>({time,value:close})));
+  if(idx.bars.length){
+    const chart=indexChart=charts?.createChart(document.getElementById('idxchart'),chartOptions);
+    chart?.addSeries(charts.LineSeries).setData(idx.bars.map(({time,close})=>({time,value:close})));
+    chart?.timeScale().fitContent();
+    bindSession(chart,document.getElementById('index-session'),idx.bars);
   }
 }
 }
@@ -156,7 +245,7 @@ const menu=document.getElementById('menu');
 function setMenu(open){N.classList.toggle('open',open);menu.setAttribute('aria-expanded',String(open))}
 menu.onclick=()=>setMenu(!N.classList.contains('open'));
 N.addEventListener('click',event=>{if(event.target.closest('a[data-route]'))setMenu(false)});
-window.addEventListener('hashchange',()=>{setMenu(false);view()});document.getElementById('clear').onclick=()=>{if(confirm('要清除此裝置的學習進度、測驗與模擬資料嗎？')){Object.keys(localStorage).filter(k=>k.startsWith('stepwise-')).forEach(k=>localStorage.removeItem(k));document.getElementById('clear-msg').textContent='已清除';window.dispatchEvent(new Event('hashchange'))}};view()})();
+window.addEventListener('hashchange',()=>{setMenu(false);view()});document.getElementById('clear').onclick=()=>{if(confirm('要清除此裝置的學習進度、測驗、模擬資料與最近查詢嗎？')){Object.keys(localStorage).filter(k=>k.startsWith('stepwise-')).forEach(k=>localStorage.removeItem(k));document.getElementById('clear-msg').textContent='已清除';window.dispatchEvent(new Event('hashchange'))}};view()})();
 
 ;
 (()=>{const D=window.SIM_HISTORY,S=window.HistoricalSimulation,app=document.getElementById('app');let chart;const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),money=x=>Number(x).toLocaleString('zh-TW',{maximumFractionDigits:0}),pct=x=>`${(+x).toFixed(2)}%`,k=(a,b)=>`<article class="kpi-card"><span>${a}</span><strong>${b}</strong></article>`;function plot(el,labels,datasets){chart?.destroy();chart=new Chart(el,{type:'line',data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom'}}}})}function view(){if(location.hash!=='#simulation')return;app.innerHTML=`<div class="wrap"><p class="eyebrow">08 / 歷史學習模擬</p><h1>用真實市場歷史練習</h1><p>資料為台灣加權股價指數月平均，不含股息與交易成本；過去表現不代表未來，不是標的推薦。</p><div class="card"><div class="actions mode-tabs" role="group"><button id="mode-a" aria-pressed="true">歷史事件闖關</button><button id="mode-b" class="button-secondary" aria-pressed="false">自由區間回測</button></div><div id="panel"></div></div><p class="tiny">國發會「景氣指標及燈號」OGL-1，資料集 6099，${D.range.startYm}–${D.range.endYm}。<a href="https://data.gov.tw/dataset/6099" target="_blank" rel="noopener">官方來源</a></p></div>`;document.getElementById('mode-a').onclick=()=>mode('a');document.getElementById('mode-b').onclick=()=>mode('b');mode('a')}function mode(x){let a=document.getElementById('mode-a'),b=document.getElementById('mode-b');a.classList.toggle('button-secondary',x!=='a');b.classList.toggle('button-secondary',x!=='b');a.setAttribute('aria-pressed',String(x==='a'));b.setAttribute('aria-pressed',String(x==='b'));x==='a'?scenario():free()}function scenario(){let p=document.getElementById('panel');p.innerHTML=`<h2>模式 A｜歷史事件闖關</h2><label>選擇情境<select id="sc">${D.scenarios.map(x=>`<option value="${x.id}">${esc(x.title)}</option>`)}</select></label><label>每月投入<input id="sm" type="number" min="0" value="3000"></label><p id="sd"></p><p id="sp"></p><div class="actions" id="ops"><button id="go">繼續定期定額</button><button id="pause" class="button-secondary">本月暫停扣款</button><button id="sell" class="button-secondary">全部賣出空手觀望</button><button id="buy" class="button-secondary">重新買回並扣款</button><button id="all" class="button-secondary">一鍵以定期定額跑完剩餘月份</button><button id="reset" class="button-secondary">重設情境</button></div><p id="status" role="status"></p><div id="event"></div><div class="chart-box"><canvas id="simchart"></canvas></div><div id="metrics"></div>`;let step=0,actions=[];const sel=document.getElementById('sc'),range=()=>S.sliceMonths(D.monthlySeries,current().startYm,current().endYm),current=()=>D.scenarios.find(x=>x.id===sel.value);const storageKey=()=>`stepwise-sim-${sel.value}`;
