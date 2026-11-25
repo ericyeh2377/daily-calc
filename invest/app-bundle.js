@@ -30,9 +30,15 @@ function compound(){return wrap('複利與定期定額試算',`<p>報酬率與�
 function costs(){return wrap('交易成本試算與開戶資訊',`<p>實際優惠依券商公告；費率來源：${link('https://www.twse.com.tw/','臺灣證券交易所')}、${link('https://www.etax.nat.gov.tw/','財政部')}</p><div class="card"><div class="form-grid"><label>股價<input id="price" type="number" value="50"></label><label>股數<input id="shares" type="number" value="1"></label><label>手續費折扣<input id="discount" type="number" min="0" max="1" step=".01" value="1"></label><label>最低手續費（元）<select id="minimum"><option value="20">20</option><option value="1">1</option></select><small>零股或定期定額優惠請見券商表。</small></label><label>商品類型<select id="type"><option value="stock">股票 0.3%</option><option value="etf">股票型 ETF 0.1%</option><option value="dayTrade">現股當沖 0.15%</option></select></label></div><button id="tcalc">計算成本</button><p id="tres" aria-live="polite"></p></div><h2>開戶文件清單</h2><p>身分證、第二證件、本人銀行帳戶；實際要求依券商公告。</p><h2>券商中立資訊</h2><div class="table-wrap"><table><thead><tr><th>券商</th><th>查證狀態</th><th>查證日期</th><th>官方網站</th></tr></thead><tbody>${C.brokers.brokers.map(b=>`<tr><td>${e(b.name)}</td><td>${e(b.verificationNote||'未查證')}</td><td>${e(b.verifiedDate||'未提供')}</td><td>${link(b.officialUrl,'官網')}</td></tr>`).join('')}</tbody></table></div><p class="tiny">實際手續費依各券商公告。最低手續費、折扣和活動期限可能變動，請點官網核對。</p>`)}
 function fraud(){const d=C.fraud;return wrap(d.title,`<p>${e(d.goldenRule)}</p><div class="grid">${d.top5ScamTactics.map(x=>`<article class="card"><h2>${e(x.title)}</h2><p>${e(x.howItWorks||x.description||x.tactic||x.detail)}</p><p class="tiny">${e(x.action||x.response||'請先透過官方管道查證。')}</p></article>`).join('')}</div><h2>情境快測</h2>${d.scamQuiz.map((q,i)=>`<fieldset class="card"><legend>${i+1}. ${e(q.question)}</legend>${q.options.map((o,j)=>`<label class="quiz-choice"><input type="radio" name="fq${i}" value="${j}">${e(o.text||o)}</label>`).join('')}<button type="button" data-fq="${i}">查看解答</button><p id="fa${i}" aria-live="polite"></p></fieldset>`).join('')}<div class="actions">${d.officialLinks.map(x=>link(x.url,x.title||x.name)).join(' · ')}</div>`)}
 function simPlaceholder(){return wrap('模擬練習場','<p>歷史大盤教學模擬。</p>')}
-function marketData(){return {stocks:window.MARKET_STOCKS??{symbols:[]},idx:window.MARKET_INDEX??{bars:[]}}}
-function market(){const {stocks}=marketData();return wrap('歷史收盤行情',`<p>只呈現盤後資料，無推薦清單、買賣訊號或建議。</p><form id="mform"><label>自行輸入上市／上櫃代碼或名稱<input id="mq" type="search" list="hints" autocomplete="off"></label><datalist id="hints">${stocks.symbols.map(x=>`<option value="${e(x.code)}">${e(x.name)}</option>`).join('')}</datalist><div id="sugg" class="suggestions"></div><button>查詢</button></form><div id="mresult" class="result-box" aria-live="polite"></div><article class="card"><h2>臺灣加權股價指數</h2><div id="idxchart" class="chart-box"></div><p>證交所「發行量加權股價指數歷史資料」OGL-1，日資料自首次更新起累積；非即時、未還原除權息、僅供教育。${link('https://data.gov.tw/dataset/11755','資料集 11755')}</p></article><p>個股資料來源：證期局 OGL-1；僅自本機更新日起累積。${link('https://data.gov.tw/dataset/11549')}</p>`)}
-function view(){let id=location.hash.slice(1)||'home';N.querySelectorAll('a').forEach(x=>x.setAttribute('aria-current',x.dataset.route===id?'page':'false'));const pages={home,roadmap,quiz,glossary,guide,compound,costs,fraud,simulation:simPlaceholder,market,about:()=>wrap('關於拾步 Stepwise','<p>本站提供金融基礎教育，不收集個資、不提供特定標的建議。</p>'),privacy:()=>wrap('隱私權說明','<p>網站無帳號、追蹤碼或 Cookie。進度和測驗資料只存在本機瀏覽器 localStorage，可由頁尾清除。</p>')};A.innerHTML=(pages[id]||home)();document.title=`${routes.find(x=>x[0]===id)?.[1]||'說明'}｜拾步 Stepwise`;bind(id)}
+function marketData(){
+  const listed=(window.MARKET_STOCKS?.symbols??[]).map(stock=>({...stock,market:'TWSE'}));
+  const listedCodes=new Set(listed.map(stock=>stock.code));
+  const overTheCounter=(window.MARKET_TPEX??[]).filter(stock=>!listedCodes.has(stock.code));
+  return {symbols:[...listed,...overTheCounter],idx:window.MARKET_INDEX??{bars:[]}};
+}
+function market(){const {symbols}=marketData();return wrap('歷史收盤行情',`<p>查詢台股每日開、高、低、收，並切換圖表區間。</p><form id="mform"><label>自行輸入上市／上櫃代碼或名稱<input id="mq" type="search" list="hints" autocomplete="off"></label><datalist id="hints">${symbols.map(x=>`<option value="${e(x.code)}">${e(x.name)}</option>`).join('')}</datalist><div id="sugg" class="suggestions"></div><button>查詢</button></form><div id="mresult" class="result-box" aria-live="polite"></div><article class="card"><h2>臺灣加權股價指數</h2><div id="idxchart" class="chart-box"></div><p>證交所「發行量加權股價指數歷史資料」OGL-1，非即時、未還原除權息、僅供教育。${link('https://data.gov.tw/dataset/11755','資料集 11755')}</p></article><p>個股歷史行情由 FinMind 提供，原始資料來自臺灣證券交易所與證券櫃檯買賣中心。${link('https://finmind.github.io/tutor/TaiwanMarket/Technical/','資料說明')}</p>`)}
+let disposeMarket;
+function view(){disposeMarket?.();disposeMarket=undefined;let id=location.hash.slice(1)||'home';N.querySelectorAll('a').forEach(x=>x.setAttribute('aria-current',x.dataset.route===id?'page':'false'));const pages={home,roadmap,quiz,glossary,guide,compound,costs,fraud,simulation:simPlaceholder,market,about:()=>wrap('關於拾步 Stepwise','<p>本站提供金融基礎教育，不收集個資、不提供特定標的建議。</p>'),privacy:()=>wrap('隱私權說明','<p>本站無帳號、追蹤碼或 Cookie。查詢個股時，瀏覽器會直接向 FinMind 傳送股票代號。進度和測驗資料存在本機瀏覽器，可由頁尾清除。</p>')};A.innerHTML=(pages[id]||home)();document.title=`${routes.find(x=>x[0]===id)?.[1]||'說明'}｜拾步 Stepwise`;bind(id)}
 function bind(id){if(id==='roadmap'){const done=get('roadmap',[]);A.querySelectorAll('[data-task]').forEach(x=>x.onchange=()=>{const d=new Set(get('roadmap',[]));x.checked?d.add(x.dataset.task):d.delete(x.dataset.task);set('roadmap',[...d]);});document.getElementById('emcalc').onclick=()=>{try{let r=L.emergency({expense:+exp.value,saved:+saved.value,monthlySaving:+saving.value,months:+months.value});const estimate=r.monthsToGoal===null?"目前無新增儲蓄，無法估算達標月數":`預估 ${r.monthsToGoal} 個月達標。`;emres.textContent=`目標 NT$ ${money(r.target)}；尚差 NT$ ${money(r.gap)}；${estimate}`}catch(e){emres.textContent=e.message}}}
 if(id==='quiz')document.getElementById('quiz').onsubmit=x=>{x.preventDefault();let sc=[...new FormData(x.target).values()].map(Number),res=L.score(sc);set('quiz',res);quizres.innerHTML=`<section class="card"><h2>${res}</h2><p>${e(C.quiz.profiles.find(x=>res.startsWith(x.name.slice(0,2)))?.traits||'測驗僅供認識自身風險感受，不代表個人化配置。')}</p></section>`};
 if(id==='glossary'){let q=gq,cat=gc;function paint(){let v=q.value.trim(),items=C.glossary.terms.filter(t=>(!cat.value||t.category===cat.value));if(v)items=window.Fuse?new Fuse(items,{keys:['term','plain','example','caution'],threshold:.38}).search(v).map(x=>x.item):items.filter(t=>`${t.term}${t.plain}`.includes(v));gcount.textContent=`顯示 ${items.length} / 48 個詞`;glist.innerHTML=items.map(t=>`<article class="card"><span class="pill">${e(t.category)}</span><h2>${e(t.term)}</h2><p>${e(t.plain)}</p><p>例子：${e(t.example)}</p><p>注意：${e(t.caution)}</p>${t.source?`<p>${e(t.source)}</p>`:''}</article>`).join('')}q.oninput=cat.onchange=paint;paint()}
@@ -40,32 +46,108 @@ if(id==='compound'){ccalc.onclick=()=>{try{let r=L.compound({principal:+cp.value
 if(id==='costs')tcalc.onclick=()=>{try{const base=C.brokers.legalFeeBaseline,rate=x=>Number((base[x].rate.match(/[0-9.]+/)||[])[0])/100;let r=L.tradeCost({price:+price.value,shares:+shares.value,discount:+discount.value,minimum:+minimum.value,type:type.value,rates:{stock:rate('stockTransactionTax'),etf:rate('etfTransactionTax'),dayTrade:rate('dayTradingTax')}});tres.textContent=`單邊手續費 NT$ ${money(r.fee)}；證交稅 NT$ ${money(r.tax)}；來回成本 NT$ ${money(r.cost)}；回本漲幅 ${r.breakEvenPct.toFixed(2)}%。`}catch(e){tres.textContent=e.message}};
 if(id==='fraud')A.querySelectorAll('[data-fq]').forEach(b=>b.onclick=()=>{let q=C.fraud.scamQuiz[+b.dataset.fq];document.getElementById('fa'+b.dataset.fq).textContent=q.explanation||q.answer||`正確答案：${q.answerIndex??q.correctAnswer}`});
 if(id==='market'){
-  const {stocks,idx}=marketData();
+  const {symbols,idx}=marketData();
   const input=document.getElementById('mq'),suggestions=document.getElementById('sugg');
   const form=document.getElementById('mform'),result=document.getElementById('mresult');
-  const search=window.Fuse?new window.Fuse(stocks.symbols,{keys:['code','name'],threshold:.35}):null;
+  const search=window.Fuse?new window.Fuse(symbols,{keys:['code','name'],threshold:.25}):null;
   const charts=window.LightweightCharts;
+  let request,stockChart,indexChart;
+  const history=new Map();
+  const price=value=>Number(value).toLocaleString('zh-TW',{minimumFractionDigits:2,maximumFractionDigits:2});
   input.oninput=()=>{
-    const matches=search?.search(input.value.trim(),{limit:8})??[];
+    const query=input.value.trim();
+    const matches=query?search?.search(query,{limit:6})??[]:[];
     suggestions.innerHTML=matches.map(({item})=>`<button type="button" data-code="${e(item.code)}">${e(item.code)} ${e(item.name)}</button>`).join('');
     suggestions.querySelectorAll('button').forEach(button=>button.onclick=()=>{input.value=button.dataset.code;form.requestSubmit()});
   };
-  form.onsubmit=event=>{
+  form.onsubmit=async event=>{
     event.preventDefault();
-    const query=input.value.trim();
-    const stock=stocks.symbols.find(item=>item.code===query)||search?.search(query,{limit:1})[0]?.item;
+    request?.abort();
+    stockChart?.remove();
+    stockChart=undefined;
+    const query=input.value.trim().toUpperCase();
+    const stock=symbols.find(item=>item.code===query||item.name===query);
     suggestions.innerHTML='';
-    if(!stock?.bars?.length){result.textContent='沒有已累積的行情資料。';return}
-    const last=stock.bars.at(-1),change=last.change??0;
-    const direction=change>0?'up':change<0?'down':'';
-    const changeLabel=change>0?'+':change<0?'−':'';
-    const arrow=change>0?'▲ ':change<0?'▼ ':'';
-    result.innerHTML=`<h2>${e(stock.code)} ${e(stock.name)}</h2><p>NT$ ${money(last.close)} <strong class="quote-change ${direction}">${arrow}${changeLabel}${money(Math.abs(change))}</strong>　成交量 ${money(last.volume||0)} 股</p><div id="stockchart" class="chart-box"></div><p>來源：證期局個股日成交資訊；日期 ${e(last.time)}；抓取 ${e(stocks.updatedAt||'未知')}。未還原除權息、非即時、僅供教育。</p>`;
-    const chart=charts.createChart(document.getElementById('stockchart'),{autoSize:true});
-    chart.addSeries(charts.CandlestickSeries).setData(stock.bars);
+    if(!query){result.textContent='請輸入股票代碼或名稱。';return}
+    if(!stock){result.textContent='找不到股票，請確認代碼或從搜尋建議選取。';return}
+    const source=stock.market==='TPEX'
+      ? 'https://www.tpex.org.tw/zh-tw/mainboard/trading/info/stock-pricing.html'
+      : 'https://www.twse.com.tw/zh/trading/historical/stock-day.html?stockNo='+encodeURIComponent(stock.code);
+    result.innerHTML=`<h2>${e(stock.code)} ${e(stock.name)}</h2><p role="status">正在載入每日行情…</p>`;
+    const current=request=new AbortController();
+    try {
+      let bars=history.get(stock.code);
+      if(!bars){
+        const params=new URLSearchParams({dataset:'TaiwanStockPrice',data_id:stock.code,start_date:'1994-10-01'});
+        const response=await fetch('https://api.finmindtrade.com/api/v4/data?'+params,{signal:AbortSignal.any([current.signal,AbortSignal.timeout(15000)])});
+        if(!response.ok)throw Error('歷史行情暫時無法載入。');
+        const payload=await response.json();
+        if(payload.status!==200||!Array.isArray(payload.data))throw Error('歷史行情暫時無法載入。');
+        const daily=new Map();
+        for(const {stock_id,date,open,max,min,close,Trading_Volume} of payload.data){
+          if(stock_id===stock.code&&/^\d{4}-\d{2}-\d{2}$/.test(date)&&[open,max,min,close].every(value=>Number.isFinite(value)&&value>0))
+            daily.set(date,{time:date,open,high:max,low:min,close,volume:Trading_Volume});
+        }
+        bars=[...daily.values()].sort((a,b)=>a.time.localeCompare(b.time));
+        if(!bars.length)throw Error('資料來源目前沒有這檔股票的日線。');
+        history.set(stock.code,bars);
+      }
+      if(current.signal.aborted)return;
+      const last=bars.at(-1);
+      result.innerHTML=`<h2>${e(stock.code)} ${e(stock.name)} <small>${stock.market==='TPEX'?'上櫃':'上市'}</small></h2>
+        <p class="market-price"><strong>NT$ ${price(last.close)}</strong> <span>${last.time} 收盤</span></p>
+        <div class="market-ranges" role="group" aria-label="日線區間">
+          <button type="button" data-months="1" aria-pressed="false">1 個月</button>
+          <button type="button" data-months="6" aria-pressed="false">6 個月</button>
+          <button type="button" data-months="12" aria-pressed="false">1 年</button>
+          <button type="button" data-months="60" aria-pressed="false">5 年</button>
+          <button type="button" data-months="0" aria-pressed="true">全部</button>
+        </div>
+        <p id="market-session"></p><div id="stockchart" class="chart-box" aria-label="每日價格走勢"></div>
+        <p>資料範圍 ${bars[0].time} 至 ${last.time}（${money(bars.length)} 個交易日）。盤後日線，未還原除權息。${link(source,'官方查詢')}</p>`;
+      const session=result.querySelector('#market-session');
+      const showDay=bar=>{session.textContent=`${bar.time}　開 ${price(bar.open)}　高 ${price(bar.high)}　低 ${price(bar.low)}　收 ${price(bar.close)}`};
+      showDay(last);
+      const host=result.querySelector('#stockchart');
+      if(!charts){host.textContent='圖表元件無法載入，請使用官方查詢。';return}
+      const chart=stockChart=charts.createChart(host,{autoSize:true});
+      const series=chart.addSeries(charts.CandlestickSeries,{upColor:'#b23b39',downColor:'#16806a',borderVisible:false,wickUpColor:'#b23b39',wickDownColor:'#16806a'});
+      series.setData(bars);
+      const scale=chart.timeScale();
+      scale.fitContent();
+      const barsByDate=new Map(bars.map(bar=>[bar.time,bar]));
+      chart.subscribeCrosshairMove(event=>{
+        const day=event.time;
+        const key=day&&typeof day==='object'
+          ? [day.year,String(day.month).padStart(2,'0'),String(day.day).padStart(2,'0')].join('-')
+          : day;
+        showDay(barsByDate.get(key)??last);
+      });
+      const buttons=[...result.querySelectorAll('[data-months]')];
+      buttons.forEach(button=>button.onclick=()=>{
+        buttons.forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+        const months=Number(button.dataset.months);
+        if(!months){scale.fitContent();return}
+        const date=new Date(last.time+'T00:00:00Z');
+        const day=date.getUTCDate();
+        date.setUTCDate(1);
+        date.setUTCMonth(date.getUTCMonth()-months);
+        const lastDay=new Date(Date.UTC(date.getUTCFullYear(),date.getUTCMonth()+1,0)).getUTCDate();
+        date.setUTCDate(Math.min(day,lastDay));
+        const from=date.toISOString().slice(0,10);
+        scale.setVisibleRange({from:from<bars[0].time?bars[0].time:from,to:last.time});
+      });
+    } catch(error) {
+      if(current.signal.aborted)return;
+      const quote=stock.bars?.at(-1);
+      const fallback=quote?`<p>本站保存的收盤資料：${e(quote.time)}，NT$ ${price(quote.close)}。</p>`:'';
+      const message=error.message==='資料來源目前沒有這檔股票的日線。'?error.message:'歷史行情暫時無法載入，請稍後再試。';
+      result.innerHTML=`<h2>${e(stock.code)} ${e(stock.name)}</h2><p role="status">${message}</p>${fallback}<p>${link(source,'到官方網站查詢')}</p>`;
+    }
   };
-  if(idx.bars.length){
-    const chart=charts.createChart(document.getElementById('idxchart'),{autoSize:true});
+  disposeMarket=()=>{request?.abort();stockChart?.remove();indexChart?.remove()};
+  if(idx.bars.length&&charts){
+    const chart=indexChart=charts.createChart(document.getElementById('idxchart'),{autoSize:true});
     chart.addSeries(charts.LineSeries).setData(idx.bars.map(({time,close})=>({time,value:close})));
   }
 }

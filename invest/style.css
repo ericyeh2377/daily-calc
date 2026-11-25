@@ -89,3 +89,11 @@
 }
 
 .back-to-calculators { flex: 0 0 auto; font-weight: 700; }
+
+.market-price { display:flex; align-items:baseline; flex-wrap:wrap; gap:.65rem; }
+.market-price strong { font-size:clamp(1.45rem,4vw,2rem); font-variant-numeric:tabular-nums; }
+.market-ranges { display:flex; flex-wrap:wrap; gap:.4rem; margin:.9rem 0; }
+.market-ranges button { padding:.45rem .7rem; color:inherit; background:transparent; border:1px solid currentColor; }
+.market-ranges button[aria-pressed="true"] { background:#145746; border-color:#145746; color:#fff; }
+#market-session { min-height:1.5em; font-size:.85rem; font-variant-numeric:tabular-nums; }
+#stockchart { height:clamp(290px,50vw,445px); }
