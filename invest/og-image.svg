@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" fill="none" role="img" aria-label="拾步 Stepwise — 一步一步，看懂你的第一筆投資。">
+  <rect width="1200" height="630" fill="#0F766E"/>
+  <!-- Subtle background geometric staircase motif -->
+  <path d="M680 560 H810 Q834 560 834 536 V446 Q834 422 858 422 H988 Q1012 422 1012 398 V308 Q1012 284 1036 284 H1160" stroke="#115E59" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M740 530 H850 Q870 530 870 510 V430 Q870 410 890 410 H1000 Q1020 410 1020 390 V310 Q1020 290 1040 290 H1140" stroke="#14B8A6" stroke-opacity="0.28" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="1090" cy="236" r="22" fill="#FDE68A" fill-opacity="0.9"/>
+
+  <!-- Top pill badge -->
+  <rect x="88" y="88" width="332" height="44" rx="22" fill="#115E59"/>
+  <text x="116" y="116" fill="#CCFBF1" font-family="'PingFang TC','Noto Sans TC','Microsoft JhengHei',sans-serif" font-size="18" font-weight="600" letter-spacing="1">中立金融教育・不推明牌・不賣課</text>
+
+  <!-- Brand Mark + Wordmark -->
+  <g transform="translate(88,186)">
+    <rect width="72" height="72" rx="18" fill="#FFFFFF"/>
+    <path d="M15 53 H25.5 Q29 53 29 49.5 V43 Q29 39.5 32.5 39.5 H39 Q42.5 39.5 42.5 36 V29.5 Q42.5 26 46 26 H57.5" stroke="#0F766E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="51.5" cy="17" r="5" fill="#F59E0B"/>
+  </g>
+  <text x="182" y="236" fill="#FFFFFF" font-family="'PingFang TC','Noto Sans TC','Microsoft JhengHei',sans-serif" font-size="52" font-weight="700" letter-spacing="4">拾步</text>
+  <text x="312" y="234" fill="#99F6E4" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="30" font-weight="600" letter-spacing="1">Stepwise</text>
+
+  <!-- Main Slogan -->
+  <text x="88" y="346" fill="#FFFFFF" font-family="'PingFang TC','Noto Sans TC','Microsoft JhengHei',sans-serif" font-size="48" font-weight="700" letter-spacing="1.5">一步一步，</text>
+  <text x="88" y="416" fill="#FFFFFF" font-family="'PingFang TC','Noto Sans TC','Microsoft JhengHei',sans-serif" font-size="48" font-weight="700" letter-spacing="1.5">看懂你的第一筆投資。</text>
+
+  <!-- Subtitle -->
+  <text x="88" y="486" fill="#CCFBF1" font-family="'PingFang TC','Noto Sans TC','Microsoft JhengHei',sans-serif" font-size="22" font-weight="400">起步路線圖・複利與交易成本試算・白話辭典・防詐騙練習</text>
+</svg>

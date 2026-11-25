@@ -1,6 +1,6 @@
 document.querySelectorAll('[data-year]').forEach(function (node) { node.textContent = String(new Date().getFullYear()); });
 
-const lastUpdated = "2026-11-25T18:51+08:00";
+const lastUpdated = "2026-11-25T19:07+08:00";
 const brand = document.querySelector(".top > .brand");
 
 if (brand) {
