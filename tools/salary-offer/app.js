@@ -1,0 +1,14 @@
+(function(){
+  'use strict';
+  var form=document.getElementById('salary-form'),out=document.getElementById('results');
+  var money=function(n){return new Intl.NumberFormat('zh-TW',{style:'currency',currency:'TWD',maximumFractionDigits:0}).format(n||0);};
+  function readForm(){var fd=new FormData(form),family={year:'115',spouse:fd.has('spouse'),dependents:Number(fd.get('dependents')),minorDependents:Number(fd.get('minorDependents')),elderlyDependents:Number(fd.get('elderlyDependents')),otherDeductions:Number(fd.get('otherDeductions'))};
+    var values={};['a','b'].forEach(function(key){var el=form.querySelector('[data-offer="'+key+'"]'),d={};['monthlySalary','guaranteedMonths','annualBonus','commuteCostPerDay','commuteHoursPerDay','commuteDaysPerYear','selfRate'].forEach(function(name){d[name]=Number(el.querySelector('[name="'+name+'"]').value);});d.selfRate/=100;d.commuteDays=Number(el.querySelector('[name="commuteDaysPerYear"]').value);d.weeklyWorkHours=Number(el.querySelector('[name="weeklyHours"]').value);d.healthDependents=Number(fd.get('healthDependents'));values[key]=d;});return{offerA:values.a,offerB:values.b,household:family};}
+  function render(){var result=window.SalaryOfferCalculator.compare(readForm());if(!result.ok){out.innerHTML='<h2>請檢查資料</h2><p>'+result.error+'</p>';return;}var a=result.offerA,b=result.offerB,html='<h2>試算結果</h2><p class="result-highlight">較高稅後實質年收入：<strong>Offer '+result.winner+'</strong>（差額 '+money(result.difference)+'）</p><div class="table-wrap"><table><thead><tr><th>項目</th><th>Offer A</th><th>Offer B</th></tr></thead><tbody>';
+    var rows=[['估算年薪', 'grossAnnual'],['估算綜所稅','incomeTax'],['勞保＋健保（年）','annualLaborHealth'],['勞退自提（年）','annualSelfContribution'],['通勤成本（年）','commuteCost'],['稅後實質年收入','netAnnual'],['月實領估算（未扣所得稅）','monthlyNetTypical'],['自提估算節稅','estimatedTaxCreditFromSelfContribution']];
+    rows.forEach(function(row){html+='<tr><th>'+row[0]+'</th><td>'+money(a[row[1]])+'</td><td>'+money(b[row[1]])+'</td></tr>';});html+='<tr><th>實質時薪（含通勤時間）</th><td>'+money(a.effectiveHourly)+'</td><td>'+money(b.effectiveHourly)+'</td></tr></tbody></table></div>';
+    function levelLine(label,item){var cap=item.monthlyDeductions.capWarnings;return label+'：勞保級距 '+money(item.monthlyDeductions.laborBase)+(cap.labor?'（已達上限）':'')+'、健保級距 '+money(item.monthlyDeductions.healthBase)+(cap.health?'（已達上限）':'')+'、勞退級距 '+money(item.monthlyDeductions.pensionBase)+(cap.pension?'（已達上限）':'');}
+    html+='<p>'+levelLine('Offer A',a)+'<br>'+levelLine('Offer B',b)+'</p><p>勞退自提以月提繳工資估算；節稅金額為簡化差額。結果不取代薪資單或個人報稅試算。</p>';out.innerHTML=html;}
+  form.addEventListener('submit',function(e){e.preventDefault();try{render();}catch(err){out.innerHTML='<h2>無法試算</h2><p>請確認輸入數值合理後再試一次。</p>';}});
+  form.addEventListener('input',function(e){if(e.target.type!=='submit')render();});
+}());

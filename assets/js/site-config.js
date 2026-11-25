@@ -1,0 +1,1 @@
+window.SITE_URL = 'https://ericyeh2377.github.io/daily-calc';

@@ -1,0 +1,1 @@
+(function(){document.querySelectorAll('[data-year]').forEach(function(n){n.textContent=String(new Date().getFullYear())});document.querySelectorAll('[data-affiliate-link]').forEach(function(a){var s=document.createElement('small');s.textContent='含推薦連結';a.appendChild(s)})})();

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>2026 薪資實領與轉職 Offer 比較試算｜日常小算所</title>
+  <meta name="description" content="試算 2026 年勞健保、勞退自提與節稅，並比較兩份 Offer 的稅後年薪、通勤成本和實質時薪。">
+  <link rel="canonical" href="https://ericyeh2377.github.io/daily-calc/tools/salary-offer/">
+  <meta property="og:title" content="2026 薪資實領與轉職 Offer 比較試算"><meta property="og:description" content="估算勞健保、勞退自提節稅與 Offer A/B 稅後收入。"><meta property="og:type" content="website"><meta property="og:url" content="https://ericyeh2377.github.io/daily-calc/tools/salary-offer/">
+  <link rel="stylesheet" href="../../assets/css/site.css"><style>#salary-form .grid label{display:block;font-weight:700;margin:.4rem 0}#salary-form .grid input:not([type=checkbox]){display:block;width:100%;min-height:44px;padding:8px;border:1px solid #aabdb3;border-radius:9px;font:inherit}input[type=checkbox]{width:1.1rem;height:1.1rem}table{width:100%;border-collapse:collapse}th,td{padding:9px;border-bottom:1px solid #dce6df;text-align:right}th:first-child{text-align:left}.table-wrap{overflow-x:auto}.result-highlight{background:#eff7e8;padding:12px;border-radius:10px}</style>
+  <script defer src="../../assets/js/site.js"></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"這是實際薪資單嗎？","acceptedAnswer":{"@type":"Answer","text":"不是。本工具用 2026 年公開費率估算，投保與扣繳細節請以雇主及主管機關資料為準。"}},{"@type":"Question","name":"勞退自提有什麼效果？","acceptedAnswer":{"@type":"Answer","text":"勞工可在 0% 至 6% 間自願提繳，提繳金額不計入當年度薪資所得課稅；實際節稅依個人所得級距而異。"}},{"@type":"Question","name":"通勤成本如何計算？","acceptedAnswer":{"@type":"Answer","text":"以每日通勤花費與天數估算年度支出，通勤時間則納入實質時薪的分母。"}}]}</script>
+</head>
+<body><header><div class="wrap top"><a class="brand" href="../../index.html">🟢 日常小算所</a><nav aria-label="主要導覽"><a href="../../index.html" aria-current="page">工具</a><a href="../../about.html">關於</a></nav></div></header>
+<main class="wrap">
+  <p class="eyebrow">薪資與職涯</p><h1>2026 薪資實領 × Offer A/B 比較</h1>
+  <p class="lead">輸入兩份工作的薪酬、通勤條件與家庭扣除資料，估算稅後年收入、勞健保及勞退自提影響。</p>
+  <p class="notice">估算僅供參考，以官方公告為準。保險費按 2026 費率及級距估算；實際投保、所得扣繳與勞退提繳依個案規定辦理。</p>
+  <form id="salary-form" class="panel">
+    <section class="panel"><h2>家庭與稅務條件</h2><div class="grid two">
+      <label>扶養親屬數（不含本人／配偶）<input name="dependents" type="number" min="0" max="20" value="0"></label>
+      <label>其中未滿 18 歲人數<input name="minorDependents" type="number" min="0" max="20" value="0"></label>
+      <label>其中年滿 70 歲直系尊親屬<input name="elderlyDependents" type="number" min="0" max="20" value="0"></label>
+      <label>配偶<input name="spouse" type="checkbox" value="1"></label>
+      <label>其他列舉扣除額（元／年）<input name="otherDeductions" type="number" min="0" value="0"></label>
+      <label>健保眷屬（最多計 3 人）<input name="healthDependents" type="number" min="0" max="3" value="0"></label>
+    </div></section>
+    <div class="form-grid offers">
+      <section class="card offer" data-offer="a"><h2>Offer A</h2>
+        <label>月薪（元）<input name="monthlySalary" type="number" min="29500" value="60000" required></label>
+        <label>保證月數<input name="guaranteedMonths" type="number" min="12" max="18" step="0.5" value="12"></label>
+        <label>預估年終／獎金（元）<input name="annualBonus" type="number" min="0" value="60000"></label>
+        <label>每日通勤花費（元）<input name="commuteCostPerDay" type="number" min="0" value="100"></label>
+        <label>每日來回通勤時間（小時）<input name="commuteHoursPerDay" type="number" min="0" max="12" step="0.25" value="1"></label>
+        <label>每年通勤天數<input name="commuteDaysPerYear" type="number" min="0" max="366" value="240"></label>
+        <label>每週工時<input name="weeklyHours" type="number" min="1" max="100" value="40"></label>
+        <label>勞退自提<input name="selfRate" type="number" min="0" max="6" step="1" value="0">%</label>
+      </section>
+      <section class="card offer" data-offer="b"><h2>Offer B</h2>
+        <label>月薪（元）<input name="monthlySalary" type="number" min="29500" value="65000" required></label>
+        <label>保證月數<input name="guaranteedMonths" type="number" min="12" max="18" step="0.5" value="12"></label>
+        <label>預估年終／獎金（元）<input name="annualBonus" type="number" min="0" value="0"></label>
+        <label>每日通勤花費（元）<input name="commuteCostPerDay" type="number" min="0" value="180"></label>
+        <label>每日來回通勤時間（小時）<input name="commuteHoursPerDay" type="number" min="0" max="12" step="0.25" value="1.5"></label>
+        <label>每年通勤天數<input name="commuteDaysPerYear" type="number" min="0" max="366" value="240"></label>
+        <label>每週工時<input name="weeklyHours" type="number" min="1" max="100" value="40"></label>
+        <label>勞退自提<input name="selfRate" type="number" min="0" max="6" step="1" value="6">%</label>
+      </section>
+    </div>
+    <button class="button primary" type="submit">試算比較</button>
+  </form>
+  <section id="results" class="panel" aria-live="polite"><h2>試算結果</h2><p>修改資料後按「試算比較」。</p></section>
+  <section class="section card"><h2>計算方式與官方來源</h2>
+    <p>採 2026 年勞保普通事故費率 11.5% 加就業保險 1%，勞工負擔一般為合計費率的 20%；健保費率 5.17%，受僱者負擔 30%。月投保薪資依級距就高歸級。勞退自提以月提繳工資及 0%–6% 估算。個人綜所稅採 115 年度級距近似試算。</p>
+    <ul><li><a href="https://www.mol.gov.tw/1607/28162/28166/28180/70460/76761/76833/" target="_blank" rel="noopener">勞動部：2026 年最低工資（月薪 29,500 元）</a></li><li><a href="https://www.bli.gov.tw/Files/25661" target="_blank" rel="noopener">勞保局：2026 年勞工保險投保薪資分級表</a></li><li><a href="https://www.bli.gov.tw/0108700.html" target="_blank" rel="noopener">勞保局：勞工保險費率</a></li><li><a href="https://www.bli.gov.tw/0011588.htm" target="_blank" rel="noopener">勞保局：就業保險費率及負擔比例</a></li><li><a href="https://www.nhi.gov.tw/ch/cp-19418-9eefb-2576-1.html" target="_blank" rel="noopener">健保署：保險費負擔比例與費率</a></li><li><a href="https://www.nhi.gov.tw/ch/cp-19421-f9533-2569-1.html" target="_blank" rel="noopener">健保署：2026 年投保金額分級表</a></li><li><a href="https://www.bli.gov.tw/0102559.html" target="_blank" rel="noopener">勞保局：勞工退休金自願提繳</a></li><li><a href="https://www.dot.gov.tw/singlehtml/ch26?cntId=cf5db69f558d42409aa56c70838e8802" target="_blank" rel="noopener">財政部：115 年度綜所稅免稅額、扣除額及級距</a></li></ul>
+    <p>提醒：勞保普通事故費率將於 2027 年調升，本頁僅估算 2026 年（<a href="https://www.bli.gov.tw/0110278.html" target="_blank" rel="noopener">勞保局公告</a>）。年終獎金的補充保費、各類津貼、加班費、特殊扣除額及非全年在職情況未完整納入。</p>
+  </section>
+  <section class="section card"><h2>常見問題</h2><details><summary>這是實際薪資單嗎？</summary><p>不是。本工具用 2026 年公開費率估算，投保與扣繳細節請以雇主及主管機關資料為準。</p></details><details><summary>勞退自提有什麼效果？</summary><p>勞工可在 0% 至 6% 間自願提繳，提繳金額不計入當年度薪資所得課稅；實際節稅依個人所得級距而異。</p></details><details><summary>通勤成本如何計算？</summary><p>以每日通勤花費與天數估算年度支出，通勤時間則納入實質時薪的分母。</p></details></section>
+  <section class="section card"><h2>進階範本</h2><p>《2026 上班族薪資單核對、轉職 Offer 比較與 10 年資產累積 Excel &amp; Notion 儀表板》｜建議售價 NT$249</p><a href="#placeholder">範本資訊（尚未上架）</a></section>
+  <section class="section card"><h2>導購推薦</h2><p>以下為預留推薦商品位置，正式上架後可能含推薦連結。</p><a class="recommendation" data-affiliate-link href="#placeholder" rel="sponsored noopener">查看推薦商品</a></section>
+</main><footer class="site-footer"><a href="../../privacy.html">隱私權</a><a href="../../disclaimer.html">免責聲明</a><a href="../../about.html">關於</a></footer>
+<script src="../income-tax-2027/logic.js"></script><script src="logic.js"></script><script src="app.js"></script></body></html>

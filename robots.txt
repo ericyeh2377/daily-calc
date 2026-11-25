@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ericyeh2377.github.io/daily-calc/sitemap.xml
